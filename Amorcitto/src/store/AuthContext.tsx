@@ -1,34 +1,44 @@
-import React, { createContext, useState, ReactNode } from 'react';
-
-interface User {
-  username: string;
-  role: 'admin' | 'cashier';
-}
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { auth } from "../firebaseConfig";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, role: 'admin' | 'cashier') => void;
-  logout: () => void;
+  role: string;
+  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string>("cashier");
 
-  const login = (username: string, role: 'admin' | 'cashier') => {
-    setUser({ username, role });
+  const register = async (email: string, password: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    setUser(userCredential.user);
+    setRole("cashier");
   };
 
-  const logout = () => {
+  const login = async (email: string, password: string) => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    setUser(userCredential.user);
+    setRole("cashier"); // We can fetch role from Firestore later
+  };
+
+  const logout = async () => {
+    await signOut(auth);
     setUser(null);
+    setRole("cashier");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, role, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export { AuthContext, AuthProvider };
+export const useAuth = () => useContext(AuthContext);
