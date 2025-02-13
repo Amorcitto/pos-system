@@ -6,6 +6,7 @@ const AddProduct = () => {
   const { role } = useAuth();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,7 +14,7 @@ const AddProduct = () => {
       alert("Only admins can add products!");
       return;
     }
-    await addProduct(name, parseFloat(price));
+    await addProduct(name, parseFloat(price), parseInt(stock));
     alert("Product added!");
   };
 
@@ -23,6 +24,7 @@ const AddProduct = () => {
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
         <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} required />
+        <input type="number" placeholder="Stock" value={stock} onChange={(e) => setStock(e.target.value)} required />
         <button type="submit">Add Product</button>
       </form>
     </div>
