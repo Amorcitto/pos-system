@@ -20,3 +20,14 @@ export const recordSale = async (productId: string, name: string, price: number,
   // Update stock
   await updateStock(productId, stock - quantity);
 };
+
+export const addProduct = async (product: { name: string; price: number; stock: number }) => {
+    try {
+      const docRef = await addDoc(collection(db, "products"), product);
+      console.log("Product added with ID: ", docRef.id);
+      return docRef.id;
+    } catch (error) {
+      console.error("Error adding product: ", error);
+      throw error;
+    }
+  };
