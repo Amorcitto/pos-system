@@ -1,14 +1,19 @@
-// src/App.tsx
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ProductList from './pages/Products';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import ProductList from "./pages/Products";
+import CartPage from "./pages/Cart";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<ProductList />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<h1>Welcome to the Retail PoS</h1>} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 };
