@@ -1,19 +1,22 @@
+import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { collection, addDoc, getDocs, updateDoc, doc } from "firebase/firestore";
 
-// Add a product with stock quantity
-export const addProduct = async (name: string, price: number, stock: number) => {
-  await addDoc(collection(db, "products"), { name, price, stock });
-};
+// Record a sale and update stock
+export const recordSale = async (productId: string, name: string, price: number, quantity: number, stock: number) => {
+  if (quantity > stock) {
+    throw new Error("Not enough stock available!");
+  }
 
-// Update stock when an item is sold
-export const updateStock = async (productId: string, newStock: number) => {
-  const productRef = doc(db, "products", productId);
-  await updateDoc(productRef, { stock: newStock });
-};
+  // Add sale record
+  await addDoc(collection(db, "sales"), {
+    productId,
+    name,
+    price,
+    quantity,
+    total: price * quantity,
+    timestamp: new Date(),
+  });
 
-// Fetch all products
-export const getProducts = async () => {
-  const snapshot = await getDocs(collection(db, "products"));
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  // Update stock
+  await updateStock(productId, stock - quantity);
 };
