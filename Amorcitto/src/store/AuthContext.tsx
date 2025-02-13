@@ -1,31 +1,27 @@
-import React, { createContext, useState, useEffect } from "react";
-import { User, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { auth, googleProvider } from "../firebase";
+import React, { createContext, useState, ReactNode } from 'react';
+
+interface User {
+  username: string;
+  role: 'admin' | 'cashier';
+}
 
 interface AuthContextType {
   user: User | null;
-  login: () => void;
+  login: (username: string, role: 'admin' | 'cashier') => void;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const login = async () => {
-    await signInWithPopup(auth, googleProvider);
+  const login = (username: string, role: 'admin' | 'cashier') => {
+    setUser({ username, role });
   };
 
-  const logout = async () => {
-    await signOut(auth);
+  const logout = () => {
+    setUser(null);
   };
 
   return (
@@ -34,3 +30,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
+export { AuthContext, AuthProvider };

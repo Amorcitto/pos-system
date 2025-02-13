@@ -1,19 +1,21 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout";
-import ProductList from "./pages/Products";
-import CartPage from "./pages/Cart";
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import ProductList from './pages/Products';
+import Login from './pages/Login';
+import { AuthContext } from './store/AuthContext';
+
+const ProtectedRoute = ({ element, role }: { element: React.ReactNode; role: 'admin' | 'cashier' }) => {
+  const { user } = useContext(AuthContext);
+  return user && user.role === role ? element : <Navigate to="/login" />;
+};
 
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<h1>Welcome to the Retail PoS</h1>} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/cart" element={<CartPage />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<ProtectedRoute element={<ProductList />} role="admin" />} />
+      </Routes>
     </Router>
   );
 };
