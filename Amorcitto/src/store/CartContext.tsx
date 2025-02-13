@@ -13,8 +13,12 @@ interface CartContextType {
   removeFromCart: (id: number) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
-
+const CartContext = createContext<CartContextType>({
+    cart: [],
+    addToCart: () => {},
+    removeFromCart: () => {},
+  });
+  
 const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
