@@ -7,8 +7,19 @@ const Dashboard = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [recentSales, setRecentSales] = useState([]);
   const [lowStock, setLowStock] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (!user) {
+            navigate("/login");
+        }
+        });
+    return () => unsubscribe();
+    }, [navigate]);
+
+    return <div>Welcome to Dashboard</div>;
+    
     const fetchData = async () => {
       const productsSnap = await getDocs(collection(db, "products"));
       const salesSnap = await getDocs(collection(db, "sales"));
