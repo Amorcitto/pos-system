@@ -6,6 +6,7 @@ import ProductList from "./pages/Products";
 import CashierDashboard from "./pages/CashierDashboard";
 import SalesReport from "./pages/SalesReport";
 
+
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useAuth();
   if (!user) {
