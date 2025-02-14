@@ -8,7 +8,8 @@ import SalesReport from "./pages/SalesReport";
 import Home from "./pages/Home";
 import { Button } from "@mui/material";
 import Dashboard from "./pages/Dashboard";
-
+import { Link } from "react-router-dom";
+import Login from "./pages/Login";
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useAuth();
   if (!user) {
@@ -31,6 +32,7 @@ export const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="products" element={<ProductList />} />
+    <Route path="/login" element={<Login />} />
     <Route path="/add-product" element={<AdminRoute><AddProduct /></AdminRoute>} />
     <Route path="/cashier" element={<ProtectedRoute><CashierDashboard /></ProtectedRoute>} />
     <Route path="/sales-report" element={<AdminRoute><SalesReport /></AdminRoute>} />

@@ -1,39 +1,60 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../store/AuthContext';
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Card, CardContent, Typography } from "@mui/material";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
-  const [role, setRole] = useState<'admin' | 'cashier'>('cashier');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    login(username, role);
-    navigate('/');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard"); // Redirect after successful login
+    } catch (err) {
+      setError("Invalid email or password. Please try again.");
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl mb-4">Login</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="border p-2 mb-2"
-      />
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value as 'admin' | 'cashier')}
-        className="border p-2 mb-2"
-      >
-        <option value="admin">Admin</option>
-        <option value="cashier">Cashier</option>
-      </select>
-      <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleLogin}>
-        Login
-      </button>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <Card className="p-6 w-full max-w-sm">
+        <CardContent>
+          <Typography variant="h5" className="mb-4 text-center">
+            Admin Login
+          </Typography>
+
+          {error && <Typography className="text-red-600">{error}</Typography>}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Login
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
