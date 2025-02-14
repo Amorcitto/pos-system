@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { Card, CardContent, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [totalProducts, setTotalProducts] = useState(0);
@@ -19,7 +20,7 @@ const Dashboard = () => {
     }, [navigate]);
 
     return <div>Welcome to Dashboard</div>;
-    
+
     const fetchData = async () => {
       const productsSnap = await getDocs(collection(db, "products"));
       const salesSnap = await getDocs(collection(db, "sales"));
