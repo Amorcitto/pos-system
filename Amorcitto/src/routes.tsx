@@ -6,6 +6,8 @@ import ProductList from "./pages/Products";
 import CashierDashboard from "./pages/CashierDashboard";
 import SalesReport from "./pages/SalesReport";
 import Home from "./pages/Home";
+import { Button } from "@mui/material";
+import Dashboard from "./pages/Dashboard";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useAuth();
@@ -32,5 +34,6 @@ export const AppRoutes = () => (
     <Route path="/add-product" element={<AdminRoute><AddProduct /></AdminRoute>} />
     <Route path="/cashier" element={<ProtectedRoute><CashierDashboard /></ProtectedRoute>} />
     <Route path="/sales-report" element={<AdminRoute><SalesReport /></AdminRoute>} />
+    <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
   </Routes>
 );
