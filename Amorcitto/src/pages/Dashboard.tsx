@@ -1,42 +1,47 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, auth } from "../firebaseConfig"; // Ensure auth is imported
 import { Card, CardContent, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [totalProducts, setTotalProducts] = useState(0);
-  const [recentSales, setRecentSales] = useState([]);
-  const [lowStock, setLowStock] = useState([]);
+  const [recentSales, setRecentSales] = useState<any[]>([]);
+  const [lowStock, setLowStock] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  // Redirect if user is not authenticated
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-        if (!user) {
-            navigate("/login");
-        }
-        });
+      if (!user) {
+        navigate("/login");
+      }
+    });
     return () => unsubscribe();
-    }, [navigate]);
+  }, [navigate]);
 
-    return <div>Welcome to Dashboard</div>;
-
+  // Fetch data from Firestore
+  useEffect(() => {
     const fetchData = async () => {
-      const productsSnap = await getDocs(collection(db, "products"));
-      const salesSnap = await getDocs(collection(db, "sales"));
+      try {
+        const productsSnap = await getDocs(collection(db, "products"));
+        const salesSnap = await getDocs(collection(db, "sales"));
 
-      const products = productsSnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      const sales = salesSnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+        const products = productsSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const sales = salesSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      setTotalProducts(products.length);
-      setRecentSales(sales.slice(-5));
-      setLowStock(products.filter((product) => product.stock < 5));
+        setTotalProducts(products.length);
+        setRecentSales(sales.slice(-5));
+        setLowStock(products.filter((product) => product.stock < 5));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
     fetchData();
@@ -46,6 +51,7 @@ const Dashboard = () => {
     <div className="p-5">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <div className="grid grid-cols-3 gap-4 mt-4">
+        {/* Total Products */}
         <Card>
           <CardContent>
             <Typography variant="h6">Total Products</Typography>
@@ -53,6 +59,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Recent Sales */}
         <Card>
           <CardContent>
             <Typography variant="h6">Recent Sales</Typography>
@@ -66,6 +73,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Low Stock Items */}
         <Card>
           <CardContent>
             <Typography variant="h6">Low Stock</Typography>
