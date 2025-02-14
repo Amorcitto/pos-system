@@ -5,7 +5,7 @@ import AddProduct from "./pages/AddProducts";
 import ProductList from "./pages/Products";
 import CashierDashboard from "./pages/CashierDashboard";
 import SalesReport from "./pages/SalesReport";
-
+import Home from "./pages/Home";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useAuth();
@@ -27,7 +27,8 @@ const AdminRoute = ({ children }: { children: JSX.Element }) => {
 
 export const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<ProductList />} />
+    <Route path="/" element={<Home />} />
+    <Route path="products" element={<ProductList />} />
     <Route path="/add-product" element={<AdminRoute><AddProduct /></AdminRoute>} />
     <Route path="/cashier" element={<ProtectedRoute><CashierDashboard /></ProtectedRoute>} />
     <Route path="/sales-report" element={<AdminRoute><SalesReport /></AdminRoute>} />
