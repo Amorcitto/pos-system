@@ -1,40 +1,31 @@
-import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Dashboard from "./pages/dashboard/HomeDashboard";
+import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute"; // 👈 Import here
 import { AuthProvider } from "./store/AuthContext";
-import { AppRoutes } from "./routes";
+import AdminChecker from "./pages/AdminChecker";
 
-function App() {
+const App = () => {
   return (
-    <React.StrictMode>
-      <Router>
-        <AuthProvider>
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
-        </AuthProvider>
-      </Router>
-    </React.StrictMode>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+         <Route path="/admin-checker" element={<AdminChecker />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
-}
-
-// Temporary Error Boundary to catch issues
-class ErrorBoundary extends React.Component {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any, errorInfo: any) {
-    console.error("Caught an error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong! Check console logs.</h1>;
-    }
-    return this.props.children;
-  }
-}
+};
 
 export default App;
