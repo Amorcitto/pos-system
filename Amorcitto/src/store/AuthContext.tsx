@@ -1,3 +1,4 @@
+// src/store/AuthContext.tsx
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebaseConfig";
@@ -10,6 +11,8 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || " admin@example.com";
+setRole(email === adminEmail ? "admin" : "cashier");
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);

@@ -1,20 +1,26 @@
+// src/pages/auth/Login.tsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../store/AuthContext";
-import { TextField, Button, Card, CardContent, Typography } from "@mui/material";
+import { TextField, Button, Card, CardContent, Typography, Snackbar, Alert } from "@mui/material";
+
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/dashboard");
+      setWelcomeOpen(true);
+      navigate(from, {replace: true});
     } catch (err) {
       setError("Invalid login credentials.");
     }
@@ -33,6 +39,11 @@ const Login = () => {
           </form>
         </CardContent>
       </Card>
+      <Snackbar open={welcomeOpen} autoHideDuration={6000} onClose={() => setWelcomeOpen(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={() => setWelcomeOpen(false)} severity="success" sx={{ width: '100%' }}>
+          Welcome back! You are now logged in.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

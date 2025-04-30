@@ -1,5 +1,5 @@
-// src/pages/AdminChecker.tsx
-import { useAuth } from "../store/AuthContext";
+// src/pages/users/admin/AdminChecker.tsx
+import { useAuth } from "../../../store/AuthContext";
 
 const AdminChecker = () => {
   const { user, role } = useAuth();
