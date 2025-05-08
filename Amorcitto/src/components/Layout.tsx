@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../store/AuthContext";
+import { useAuth } from "../store/AuthContext";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const auth = useContext(AuthContext);
+  const auth = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -14,7 +14,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Link to="/" className="hover:underline">Home</Link>
           <Link to="/products" className="hover:underline">Products</Link>
 
-          {auth?.user && auth.role === "admin" && (
+          {auth.user && auth.role === "admin" && (
             <>
               <Link to="/dashboard" className="hover:underline">Dashboard</Link>
               <Link to="/admin/products" className="hover:underline">Manage</Link>
@@ -22,13 +22,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </>
           )}
 
-          {auth?.user && auth.role === "cashier" && (
+          {auth.user && auth.role === "cashier" && (
             <Link to="/cashier" className="hover:underline">Cashier</Link>
           )}
         </div>
 
         <div>
-          {auth?.user ? (
+          {auth.user ? (
             <>
               <span className="mr-4">{auth.user.email}</span>
               <button onClick={auth.logout} className="bg-red-500 px-3 py-1 rounded">Logout</button>

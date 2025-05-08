@@ -14,19 +14,38 @@ import ManageProducts from "./pages/users/admin/ManageProducts";
 import Products from "./pages/products/Products";
 import Layout from "./components/Layout";
 import HomeDashboard from "./pages/dashboard/HomeDashboard";
+
 const App = () => (
   <Router>
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Layout><HomeDashboard /></Layout>} />
-        <Route path="/dashboard"element={<AdminRoute><Dashboard /></AdminRoute>} />
-        <Route path="/cashier"element={<CashierRoute><CashierPOS /></CashierRoute>}/>
-        <Route path="/receipt"element={<ProtectedRoute><ReceiptPage /></ProtectedRoute>}/>
-        <Route path="/sales-report"element={<ProtectedRoute><SalesReport /></ProtectedRoute>}/>
-        <Route path="/admin/products"element={<AdminRoute><ManageProducts /></AdminRoute>}/> {/* AdminRoute is used to protect the admin routes i'll be changing this later*/} 
-        <Route path="/products" element={<Products />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomeDashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/dashboard"
+            element={<AdminRoute><Dashboard /></AdminRoute>}
+          />
+          <Route
+            path="/cashier"
+            element={<CashierRoute><CashierPOS /></CashierRoute>}
+          />
+          <Route
+            path="/receipt"
+            element={<ProtectedRoute><ReceiptPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/sales-report"
+            element={<ProtectedRoute><SalesReport /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/products"
+            element={<AdminRoute><ManageProducts /></AdminRoute>}
+          />
+          <Route path="/products" element={<Products />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Layout>
     </AuthProvider>
   </Router>
 );

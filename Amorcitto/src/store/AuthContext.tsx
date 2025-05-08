@@ -11,8 +11,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || " admin@example.com";
-setRole(email === adminEmail ? "admin" : "cashier");
+const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || "admin@example.com";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,7 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     const result = await signInWithEmailAndPassword(auth, email, password);
     setUser(result.user);
-    setRole(email === "admin@example.com" ? "admin" : "cashier");
+    setRole(email === adminEmail ? "admin" : "cashier");
   };
 
   const logout = async () => {
