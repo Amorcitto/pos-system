@@ -14,6 +14,7 @@ import ManageProducts from "./pages/users/admin/ManageProducts";
 import Products from "./pages/products/Products";
 import Layout from "./components/Layout";
 import HomeDashboard from "./pages/dashboard/HomeDashboard";
+import AddProduct from "./pages/users/admin/AddProduct";
 
 const App = () => (
   <Router>
@@ -42,6 +43,7 @@ const App = () => (
             path="/admin/products"
             element={<AdminRoute><ManageProducts /></AdminRoute>}
           />
+          <Route path="/admin/add-product" element={<AdminRoute><AddProduct /></AdminRoute>} />
           <Route path="/products" element={<Products />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

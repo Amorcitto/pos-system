@@ -1,4 +1,3 @@
-// src/pages/users/admin/ManageProducts.tsx
 import { useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 import {
@@ -18,26 +17,42 @@ import {
   TableRow,
   Paper,
   TextField,
+  Snackbar,
+  Alert,
+  InputAdornment,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
 import { getProducts, updateProduct } from "../../../utils/firestore";
 
 const ManageProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [editing, setEditing] = useState<{ [key: string]: any }>({});
+  const [notification, setNotification] = useState<null | { type: "success" | "error"; message: string }>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortByStock, setSortByStock] = useState(false);
 
   const fetchProducts = async () => {
-    const querySnap = await getDocs(collection(db, "products"));
-    const items = querySnap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setProducts(items);
+    try {
+      const querySnap = await getDocs(collection(db, "products"));
+      const items = querySnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(items);
+    } catch (err) {
+      setNotification({ type: "error", message: "Failed to load products." });
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "products", id));
-    fetchProducts();
+    try {
+      await deleteDoc(doc(db, "products", id));
+      fetchProducts();
+      setNotification({ type: "success", message: "Product deleted." });
+    } catch (error) {
+      setNotification({ type: "error", message: "Failed to delete." });
+    }
   };
 
   const handleChange = (id: string, field: string, value: string | number) => {
@@ -58,10 +73,20 @@ const ManageProducts = () => {
         delete copy[id];
         return copy;
       });
+      setNotification({ type: "success", message: "Product updated." });
     } catch (error) {
       console.error("Error updating product: ", error);
+      setNotification({ type: "error", message: "Update failed." });
     }
   };
+
+  const filteredProducts = products
+    .filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) =>
+      sortByStock ? a.stock - b.stock : 0
+    );
 
   useEffect(() => {
     fetchProducts();
@@ -73,11 +98,32 @@ const ManageProducts = () => {
         🛠️ Manage Products
       </Typography>
 
-      <Link to="/admin/add-product">
-        <Button variant="contained" color="primary" className="mb-4">
-          ➕ Add New Product
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+        <Link to="/admin/add-product">
+          <Button variant="contained" color="primary">
+            ➕ Add New Product
+          </Button>
+        </Link>
+
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <Button variant="outlined" onClick={() => setSortByStock((prev) => !prev)}>
+          {sortByStock ? "Unsort Stock" : "Sort by Stock"}
         </Button>
-      </Link>
+      </div>
 
       <TableContainer component={Paper}>
         <Table>
@@ -90,7 +136,7 @@ const ManageProducts = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((prod) => (
+            {filteredProducts.map((prod) => (
               <TableRow key={prod.id}>
                 <TableCell>{prod.name}</TableCell>
 
@@ -141,6 +187,17 @@ const ManageProducts = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Snackbar
+        open={!!notification}
+        autoHideDuration={3000}
+        onClose={() => setNotification(null)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {notification && (
+          <Alert severity={notification.type}>{notification.message}</Alert>
+        )}
+      </Snackbar>
     </div>
   );
 };
