@@ -1,44 +1,50 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./store/AuthContext";
-import Login from "./pages/auth/Login";
-import Dashboard from "./pages/dashboard/HomeDashboard";
-import CashierPOS from "./pages/users/cashier/CashierPos";
+
+// Route Guards
 import ProtectedRoute from "./components/ProtectedRoute";
-import NotFound from "./pages/NotFound";
-import ReceiptPage from "./pages/ReceiptPage";
-import SalesReport from "./pages/sales/SalesReport";
 import AdminRoute from "./components/adminroute";
 import CashierRoute from "./components/CashierRoute";
-import ManageProducts from "./pages/users/admin/ManageProducts";
-import Products from "./pages/products/Products";
+
+// Layout
 import Layout from "./components/Layout";
+
+// Pages
+import Login from "./pages/auth/Login";
+import HomeDashboard from "./pages/dashboard/HomeDashboard";
+import CashierPOS from "./pages/users/cashier/CashierPos";
+import ReceiptPage from "./pages/ReceiptPage";
+import SalesReport from "./pages/sales/SalesReport";
+import ManageProducts from "./pages/users/admin/ManageProducts";
+import AddProduct from "./pages/users/admin/AddProduct";
+import Products from "./pages/products/Products";
+import NotFound from "./pages/NotFound";
+import CashierDashboard from "./pages/users/cashier/CashierDashboard";
 
 const App = () => (
   <Router>
     <AuthProvider>
       <Routes>
+        {/* Public Route */}
         <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <Dashboard />
-            </Layout>
-          }
-        />
+        {/* Redirect base "/" to /dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
 
+        {/* Admin Dashboard */}
         <Route
           path="/dashboard"
           element={
             <AdminRoute>
               <Layout>
-                <Dashboard />
+                <HomeDashboard />
               </Layout>
             </AdminRoute>
           }
         />
 
+        {/* Cashier POS */}
         <Route
           path="/cashier"
           element={
@@ -49,7 +55,21 @@ const App = () => (
             </CashierRoute>
           }
         />
+          
+          {/* Cashier Dashboard */}
+          <Route
+  path="/cashier-dashboard"
+  element={
+    <CashierRoute>
+      <Layout>
+        <CashierDashboard />
+      </Layout>
+    </CashierRoute>
+  }
+/>
 
+
+        {/* Receipt Page */}
         <Route
           path="/receipt"
           element={
@@ -61,6 +81,7 @@ const App = () => (
           }
         />
 
+        {/* Sales Report (Admin) */}
         <Route
           path="/sales-report"
           element={
@@ -72,6 +93,7 @@ const App = () => (
           }
         />
 
+        {/* Admin - Manage Products */}
         <Route
           path="/admin/products"
           element={
@@ -83,6 +105,19 @@ const App = () => (
           }
         />
 
+        {/* Admin - Add Product */}
+        <Route
+          path="/admin/add-product"
+          element={
+            <AdminRoute>
+              <Layout>
+                <AddProduct />
+              </Layout>
+            </AdminRoute>
+          }
+        />
+
+        {/* Public - View Products */}
         <Route
           path="/products"
           element={
@@ -92,6 +127,7 @@ const App = () => (
           }
         />
 
+        {/* 404 Not Found */}
         <Route
           path="*"
           element={
