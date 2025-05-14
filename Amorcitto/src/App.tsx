@@ -21,6 +21,8 @@ import AddProduct from "./pages/users/admin/AddProduct";
 import Products from "./pages/products/Products";
 import NotFound from "./pages/NotFound";
 import CashierDashboard from "./pages/users/cashier/CashierDashboard";
+import AddCustomer from "./pages/customers/AddCustomer";
+import LandingPage from "./pages/LandingPage";
 
 const App = () => (
   <Router>
@@ -29,8 +31,11 @@ const App = () => (
         {/* Public Route */}
         <Route path="/login" element={<Login />} />
 
-        {/* Redirect base "/" to /dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        {/* Redirect base to landing page */}
+        <Route path="/" element={<Navigate to="/landing" />} />
+
+        {/* Landing page */}
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Admin Dashboard */}
         <Route
@@ -55,19 +60,18 @@ const App = () => (
             </CashierRoute>
           }
         />
-          
-          {/* Cashier Dashboard */}
-          <Route
-  path="/cashier-dashboard"
-  element={
-    <CashierRoute>
-      <Layout>
-        <CashierDashboard />
-      </Layout>
-    </CashierRoute>
-  }
-/>
 
+        {/* Cashier Dashboard */}
+        <Route
+          path="/cashier-dashboard"
+          element={
+            <CashierRoute>
+              <Layout>
+                <CashierDashboard />
+              </Layout>
+            </CashierRoute>
+          }
+        />
 
         {/* Receipt Page */}
         <Route
@@ -81,7 +85,7 @@ const App = () => (
           }
         />
 
-        {/* Sales Report (Admin) */}
+        {/* Sales Report */}
         <Route
           path="/sales-report"
           element={
@@ -93,7 +97,7 @@ const App = () => (
           }
         />
 
-        {/* Admin - Manage Products */}
+        {/* Product Management */}
         <Route
           path="/admin/products"
           element={
@@ -104,8 +108,6 @@ const App = () => (
             </AdminRoute>
           }
         />
-
-        {/* Admin - Add Product */}
         <Route
           path="/admin/add-product"
           element={
@@ -117,7 +119,19 @@ const App = () => (
           }
         />
 
-        {/* Public - View Products */}
+        {/* Add customer */}
+        <Route
+          path="/admin/add-customer"
+          element={
+            <AdminRoute>
+              <Layout>
+                <AddCustomer />
+              </Layout>
+            </AdminRoute>
+          }
+        />
+
+        {/* Public Products */}
         <Route
           path="/products"
           element={

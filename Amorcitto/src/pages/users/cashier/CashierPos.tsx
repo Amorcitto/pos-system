@@ -1,7 +1,7 @@
 // src/pages/users/cashier/CashierPOS.tsx
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getProducts, recordSale } from "../../../utils/firestore";
+import { getProducts, getCustomers, recordSale } from "../../../utils/firestore";
 import {
   Select,
   MenuItem,
@@ -26,9 +26,17 @@ interface CartItem extends Product {
   quantity: number;
 }
 
+interface Customer {
+  id: string;
+  name: string;
+  customerId: string;
+}
+
 const CashierPOS = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [selectedProductId, setSelectedProductId] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -40,9 +48,8 @@ const CashierPOS = () => {
   useEffect(() => {
     getProducts()
       .then(setProducts)
-      .catch(() =>
-        setNotification({ type: "error", message: "Failed to load products" })
-      );
+      .catch(() => setNotification({ type: "error", message: "Failed to load products" }));
+    getCustomers().then(setCustomers);
   }, []);
 
   const handleAddToCart = () => {
@@ -58,9 +65,7 @@ const CashierPOS = () => {
     if (existing) {
       setCart((prev) =>
         prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         )
       );
     } else {
@@ -79,40 +84,57 @@ const CashierPOS = () => {
           item.name,
           item.price,
           item.quantity,
-          item.stock
+          item.stock,
+          selectedCustomerId || null
         );
       }
+
+      const receiptData = {
+        customerId: selectedCustomerId || "N/A",
+        cashier: auth.currentUser?.email || "Unknown",
+        date: new Date().toISOString(),
+        items: cart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      };
+
       setCart([]);
       setNotification({ type: "success", message: "Checkout successful!" });
       getProducts().then(setProducts);
+      navigate("/receipt", { state: { receipt: receiptData } });
     } catch (err: any) {
       setNotification({ type: "error", message: err.message });
     }
-    const receiptData = {
-      cashier: auth.currentUser?.displayName || "Unknown",
-      date: new Date().toISOString(),
-      items: cart.map((item) => ({
-        id: item.id,
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-    };
-    navigate("/receipt", { state: { receipt: receiptData } });
   };
 
   return (
     <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow">
-      <Typography variant="h5" className="mb-4">
-        Cashier Terminal
-      </Typography>
+      <Typography variant="h5" className="mb-4">🛒 Cashier Terminal</Typography>
 
       <Select
         fullWidth
+        displayEmpty
+        value={selectedCustomerId}
+        onChange={(e) => setSelectedCustomerId(e.target.value)}
+        className="mb-4"
+      >
+        <MenuItem value="">Walk-in Customer</MenuItem>
+        {customers.map((cust) => (
+          <MenuItem key={cust.id} value={cust.customerId}>
+            {cust.name}
+          </MenuItem>
+        ))}
+      </Select>
+
+      <Select
+        fullWidth
+        displayEmpty
         value={selectedProductId}
         onChange={(e) => setSelectedProductId(e.target.value)}
-        displayEmpty
         className="mb-4"
       >
         <MenuItem value="">Select Product</MenuItem>
@@ -127,41 +149,31 @@ const CashierPOS = () => {
         label="Quantity"
         type="number"
         fullWidth
-        inputProps={{ min: 1 }}
-        className="mb-4"
         value={quantity}
+        inputProps={{ min: 1 }}
         onChange={(e) => setQuantity(Number(e.target.value))}
+        className="mb-4"
       />
 
       <Button variant="contained" fullWidth onClick={handleAddToCart}>
         Add to Cart
       </Button>
 
-      {/* Cart View */}
       {cart.length > 0 && (
         <Card className="mt-6">
           <CardContent>
-            <Typography variant="h6">Cart</Typography>
+            <Typography variant="h6">🧾 Cart</Typography>
             <ul className="mt-2 space-y-2">
               {cart.map((item) => (
                 <li key={item.id}>
-                  {item.name} - {item.quantity} pcs = $
-                  {item.price * item.quantity}
+                  {item.name} - {item.quantity} pcs = ${item.price * item.quantity}
                 </li>
               ))}
             </ul>
-            <Typography variant="subtitle1" className="mt-4 font-semibold">
-              Total: $
-              {cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}
+            <Typography className="mt-4 font-semibold">
+              Total: ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}
             </Typography>
-
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              className="mt-4"
-              onClick={handleCheckout}
-            >
+            <Button variant="contained" color="primary" fullWidth className="mt-4" onClick={handleCheckout}>
               Checkout
             </Button>
           </CardContent>

@@ -23,6 +23,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </>
           )}
 
+          {auth.user && auth.role === "admin" && (
+            <>
+            <Link to= "/admin/add-customer" className="hover:underline">Add Customer</Link>
+            </>
+          )}
+
           {auth.user && auth.role === "cashier" && (
             <Link to="/cashier" className="hover:underline">Cashier</Link>
           )}
