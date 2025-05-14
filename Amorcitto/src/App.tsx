@@ -22,6 +22,7 @@ import Products from "./pages/products/Products";
 import NotFound from "./pages/NotFound";
 import CashierDashboard from "./pages/users/cashier/CashierDashboard";
 import AddCustomer from "./pages/customers/AddCustomer";
+import CustomersList from "./pages/customers/CustomersList";
 import LandingPage from "./pages/LandingPage";
 
 const App = () => (
@@ -138,6 +139,18 @@ const App = () => (
             <Layout>
               <Products />
             </Layout>
+          }
+        />
+
+        {/* Customers List */}
+        <Route
+          path="/admin/customers"
+          element={
+            <AdminRoute>
+              <Layout>
+                <CustomersList />
+              </Layout>
+            </AdminRoute>
           }
         />
 
