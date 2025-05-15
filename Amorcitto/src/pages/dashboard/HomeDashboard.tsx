@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../store/AuthContext";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { MdWarningAmber, MdInventory } from "react-icons/md";
+import { MdWarningAmber, MdInventory, MdCardGiftcard } from "react-icons/md";
 
 const HomeDashboard = () => {
   const { role } = useAuth();
@@ -17,6 +17,7 @@ const HomeDashboard = () => {
 
   const [lowStock, setLowStock] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [totalLoyalty, setTotalLoyalty] = useState(0);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,12 +26,25 @@ const HomeDashboard = () => {
         id: doc.id,
         ...doc.data(),
       })) as Product[];
+
       const low = products.filter((p) => p.stock < 5);
       setLowStock(low);
       setTotalProducts(products.length);
     };
 
+    const fetchCustomers = async () => {
+      const snapshot = await getDocs(collection(db, "customers"));
+      const customers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const total = customers.reduce((acc, c: any) => acc + (c.loyaltyPoints || 0), 0);
+      setTotalLoyalty(total);
+    };
+
     fetchProducts();
+    fetchCustomers();
   }, []);
 
   return (
@@ -39,7 +53,7 @@ const HomeDashboard = () => {
 
       {role === "admin" && (
         <>
-          {/* Metrics Section */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded shadow-sm flex items-center">
               <MdInventory className="text-blue-600 text-3xl mr-3" />
@@ -54,6 +68,14 @@ const HomeDashboard = () => {
               <div>
                 <p className="text-sm text-gray-700">Low Stock Items</p>
                 <p className="text-lg font-bold text-yellow-800">{lowStock.length}</p>
+              </div>
+            </div>
+
+            <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded shadow-sm flex items-center">
+              <MdCardGiftcard className="text-green-600 text-3xl mr-3" />
+              <div>
+                <p className="text-sm text-gray-700">Total Loyalty Points</p>
+                <p className="text-lg font-bold text-green-800">{totalLoyalty}</p>
               </div>
             </div>
           </div>

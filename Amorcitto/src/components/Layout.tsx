@@ -29,6 +29,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <Link to= "/admin/add-customer" className="hover:underline">Add Customer</Link>
             <Link to="/admin/settings" className="hover:underline">Settings</Link>
             <Link to="/returns" className="hover:underline">Returns</Link>
+            <Link to="/admin/loyalty" className="hover:underline">Loyalty Stats</Link>
             </>
           )}
 

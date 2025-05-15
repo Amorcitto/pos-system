@@ -25,6 +25,7 @@ import AddCustomer from "./pages/customers/AddCustomer";
 import CustomersList from "./pages/customers/CustomersList";
 import LandingPage from "./pages/LandingPage";
 import ProcessReturn from "./pages/returns/ProcessReturns";
+import LoyaltyStats from "./pages/customers/Loyaltystats";
 
 import SettingsPage from "./pages/settings/SettingsPage";
 
@@ -161,11 +162,23 @@ const App = () => (
         <Route
           path="/returns"
           element={
-            <protectedRoute>
+            <ProtectedRoute>
               <Layout>
                 <ProcessReturn />
               </Layout>
-            </protectedRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Loyalty Stats */}
+        <Route
+          path="admin/loyalty"
+          element={
+            <AdminRoute>
+              <Layout>
+                <LoyaltyStats />
+              </Layout>
+            </AdminRoute>
           }
         />
 
