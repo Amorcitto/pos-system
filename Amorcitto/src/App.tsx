@@ -24,6 +24,9 @@ import CashierDashboard from "./pages/users/cashier/CashierDashboard";
 import AddCustomer from "./pages/customers/AddCustomer";
 import CustomersList from "./pages/customers/CustomersList";
 import LandingPage from "./pages/LandingPage";
+import ProcessReturn from "./pages/returns/ProcessReturns";
+
+import SettingsPage from "./pages/settings/SettingsPage";
 
 const App = () => (
   <Router>
@@ -149,6 +152,30 @@ const App = () => (
             <AdminRoute>
               <Layout>
                 <CustomersList />
+              </Layout>
+            </AdminRoute>
+          }
+        />
+
+        {/* Process Returns */}
+        <Route
+          path="/returns"
+          element={
+            <protectedRoute>
+              <Layout>
+                <ProcessReturn />
+              </Layout>
+            </protectedRoute>
+          }
+        />
+
+        {/* Settings Page */}
+        <Route
+          path="/settings"
+          element={
+            <AdminRoute>
+              <Layout>
+                <SettingsPage />
               </Layout>
             </AdminRoute>
           }

@@ -41,6 +41,7 @@ export const recordSale = async (
     price,
     quantity,
     total,
+    loyaltyPoints: number,
     timestamp: new Date(),
     customerId: customerId || null,
   });
@@ -68,7 +69,7 @@ export const addCustomer = async (data: {
   dob: string;
   phone: string;
   email: string;
-  loyaltyPoints?: number;
+  loyaltyPoints: number;
 }) => {
   await addDoc(collection(db, "customers"), {
     ...data,
@@ -81,5 +82,5 @@ export const addCustomer = async (data: {
 // Get all customers
 export const getCustomers = async () => {
   const snapshot = await getDocs(collection(db, "customers"));
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
